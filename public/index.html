@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Chunker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>📄 Document Chunker</h1>
+        <p>Upload PDF documents and chunk them with configurable token sizes</p>
+    </header>
+
+    <div class="app-container">
+        <!-- Left Pane: Upload Section and Chat -->
+        <div class="left-pane">
+            <div class="panel panel-upload">
+                <h2>Upload Document</h2>
+                
+                <!-- Chunking Configuration -->
+                <div class="config-section">
+                    <h3>Chunking Settings</h3>
+                    <div class="config-row">
+                        <label for="chunkSize">Chunk Size (tokens):</label>
+                        <input type="number" id="chunkSize" value="400" min="50" max="2000">
+                    </div>
+                    <div class="config-row">
+                        <label for="overlapSize">Overlap Size (tokens):</label>
+                        <input type="number" id="overlapSize" value="25" min="0" max="100">
+                    </div>
+                </div>
+                
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-content">
+                        <div class="upload-icon">📁</div>
+                        <p>Drag & drop your PDF file here</p>
+                        <p class="small">or</p>
+                        <button class="browse-btn" onclick="document.getElementById('fileInput').click()">
+                            Browse Files
+                        </button>
+                        <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                    </div>
+                </div>
+                
+                <!-- Upload Progress -->
+                <div class="progress-section" id="progressSection" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText">Processing...</p>
+                </div>
+                
+                <!-- Uploaded Documents List -->
+                <div class="documents-list" id="documentsList">
+                    <h3>Processed Documents</h3>
+                    <div id="documentsContainer"></div>
+                </div>
+            </div>
+
+            <!-- RAG Chat Section -->
+            <div class="panel panel-chat">
+                <h2>🤖 RAG-Powered Chat</h2>
+                <p class="chat-hint">Select chunks from the right panel to use as context for your questions</p>
+                
+                <div class="selected-chunks-info" id="selectedChunksInfo">
+                    <span id="selectedCount">0</span> chunks selected
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-welcome">
+                        <div class="welcome-icon">💬</div>
+                        <p>Ask questions about your selected chunks</p>
+                        <p class="small">The AI will use the selected chunks as context to answer your questions</p>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Ask a question about the selected chunks..." onkeypress="handleChatKeypress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendChatMessage()">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Pane: Chunks Display -->
+        <div class="right-pane">
+            <div class="panel">
+                <div class="chunks-header">
+                    <h2>Document Chunks</h2>
+                    <div class="chunks-actions" id="chunksActions" style="display: none;">
+                        <label class="select-all-label">
+                            <input type="checkbox" id="selectAllChunks" onchange="toggleSelectAllChunks()">
+                            Select All
+                        </label>
+                        <span id="chunkStats"></span>
+                        <button class="export-btn" id="exportBtn" onclick="exportChunks()">
+                            📥 Export JSON
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chunks-container" id="chunksContainer">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">📋</div>
+                        <p>Upload a document to see its chunks</p>
+                        <p class="small">Chunks will appear here with their token counts and overlap indicators</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Extracting text and creating chunks...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
